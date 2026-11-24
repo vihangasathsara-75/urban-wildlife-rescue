@@ -1,4 +1,4 @@
-package com.urbanWildlifeRescue.enums;
+package com.urbanwildlife.enums;
 
 public enum IncidentStatus {
     REPORTED,

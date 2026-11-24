@@ -1,11 +1,13 @@
 package com.urbanwildlife.model;
 
+import com.urbanwildlife.enums.AnimalCondition;
+import com.urbanwildlife.enums.AnimalType;
 import java.util.List;
 
 public class Mammal extends Animal {
 
-    public Mammal() {
-        super("MAMMAL");
+    public Mammal(String species, AnimalCondition condition) {
+        super(AnimalType.MAMMAL, species, condition);
     }
 
     @Override

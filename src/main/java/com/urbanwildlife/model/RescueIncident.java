@@ -18,6 +18,7 @@ public class RescueIncident {
     private IncidentStatus status;
     private PriorityLevel priority;
     private int priorityScore;
+    private RescueTeam assignedTeam;
 
     public RescueIncident(String id, Animal animal, Location location, Reporter reporter,
                           int numberOfAnimals, boolean immediateDanger,
@@ -87,6 +88,15 @@ public class RescueIncident {
     public void setPriority(PriorityLevel priority, int score) {
         this.priority = priority;
         this.priorityScore = score;
+
+    }
+
+    public RescueTeam getAssignedTeam() {
+        return assignedTeam;
+    }
+
+    public void setAssignedTeam(RescueTeam assignedTeam) {
+        this.assignedTeam = assignedTeam;
     }
 
     @Override

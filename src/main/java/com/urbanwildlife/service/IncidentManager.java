@@ -7,6 +7,9 @@ import com.urbanwildlife.model.Location;
 import com.urbanwildlife.model.Reporter;
 import com.urbanwildlife.model.RescueIncident;
 import com.urbanwildlife.model.RescueTeam;
+import com.urbanwildlife.enums.IncidentStatus;
+import com.urbanwildlife.enums.TeamStatus;
+import com.urbanwildlife.exceptions.NoAvailableTeamException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,13 +18,16 @@ public class IncidentManager {
     private List<RescueIncident> incidents;
     private List<RescueTeam> teams;
     private PriorityCalculator calculator;
+    private TeamMatcher matcher;
     private int nextIncidentNumber;
+
 
     public IncidentManager() {
         this.incidents = new ArrayList<>();
         this.teams = new ArrayList<>();
         this.calculator = new PriorityCalculator();
         this.nextIncidentNumber = 1;
+        this.matcher = new TeamMatcher();
     }
 
     public void addTeam(RescueTeam team) {
@@ -52,6 +58,30 @@ public class IncidentManager {
 
     public List<RescueIncident> getAllIncidents() {
         return incidents;
+    }
+
+    // finds teams that are free and have the right skills for this incident
+    public List<RescueTeam> findTeamsForIncident(String incidentId)
+            throws IncidentNotFoundException, NoAvailableTeamException {
+        RescueIncident incident = findIncident(incidentId);
+        return matcher.findSuitableTeams(incident, teams);
+    }
+
+    // gives the incident to a team and updates both statuses
+    public void assignTeam(String incidentId, RescueTeam team)
+            throws IncidentNotFoundException, InvalidInputException {
+        RescueIncident incident = findIncident(incidentId);
+
+        if (incident.getStatus() != IncidentStatus.PENDING_ASSIGNMENT) {
+            throw new InvalidInputException("Incident " + incidentId + " is not waiting for a team");
+        }
+        if (!team.isAvailable()) {
+            throw new InvalidInputException(team.getName() + " is not available");
+        }
+
+        incident.setAssignedTeam(team);
+        incident.setStatus(IncidentStatus.ASSIGNED);
+        team.setStatus(TeamStatus.ASSIGNED);
     }
 
     public List<RescueTeam> getAllTeams() {

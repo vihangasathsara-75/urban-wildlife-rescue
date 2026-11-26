@@ -3,9 +3,14 @@ package com.urbanwildlife;
 import com.urbanwildlife.enums.AnimalCondition;
 import com.urbanwildlife.enums.IncidentStatus;
 import com.urbanwildlife.enums.LocationRisk;
+import com.urbanwildlife.enums.TeamStatus;
 import com.urbanwildlife.exceptions.InvalidInputException;
+import com.urbanwildlife.exceptions.NoAvailableTeamException;
 import com.urbanwildlife.model.*;
 import com.urbanwildlife.service.PriorityCalculator;
+import com.urbanwildlife.service.TeamMatcher;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
@@ -44,15 +49,29 @@ public class Main {
             System.out.println("Score: " + incident.getPriorityScore());
             System.out.println(incident);
 
-            // can this team rescue a bird?
-            System.out.println("Skills needed: " + bird.getRequiredSkills());
-            System.out.println("Team has the skills: " + team.hasAllSkills(bird.getRequiredSkills()));
+            // finding a team for the incident
+            List<RescueTeam> teams = new ArrayList<>();
+            teams.add(team);
 
-            incident.setAssignedTeam(team);
+            TeamMatcher matcher = new TeamMatcher();
+            List<RescueTeam> suitableTeams = matcher.findSuitableTeams(incident, teams);
+            System.out.println("Suitable teams: " + suitableTeams);
+
+            RescueTeam chosenTeam = suitableTeams.get(0);
+            incident.setAssignedTeam(chosenTeam);
             incident.setStatus(IncidentStatus.ASSIGNED);
+            chosenTeam.setStatus(TeamStatus.ASSIGNED);
             System.out.println(incident);
             System.out.println("Assigned to: " + incident.getAssignedTeam().getName());
+
+            // a snake incident - Alpha Team is busy now and has no reptile skills
+            Animal snake = new Reptile("Cobra", AnimalCondition.DISPLACED);
+            RescueIncident snakeIncident = new RescueIncident("INC003", snake, location, reporter,
+                    1, false, "In a garden");
+            matcher.findSuitableTeams(snakeIncident, teams);
         } catch (InvalidInputException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (NoAvailableTeamException e) {
             System.out.println("Error: " + e.getMessage());
         }
 

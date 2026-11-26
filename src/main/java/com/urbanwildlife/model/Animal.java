@@ -33,4 +33,6 @@ public abstract class Animal {
     }
 
     public abstract List<String> getRequiredSkills();
+
+    public abstract int getHandlingRisk();
 }

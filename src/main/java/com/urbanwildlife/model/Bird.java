@@ -14,4 +14,9 @@ public class Bird extends Animal {
     public List<String> getRequiredSkills() {
         return List.of("Bird Handling", "Tree Rescue");
     }
+
+    @Override
+    public int getHandlingRisk() {
+        return 1;
+    }
 }

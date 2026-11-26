@@ -5,6 +5,7 @@ import com.urbanwildlife.enums.IncidentStatus;
 import com.urbanwildlife.enums.LocationRisk;
 import com.urbanwildlife.exceptions.InvalidInputException;
 import com.urbanwildlife.model.*;
+import com.urbanwildlife.service.PriorityCalculator;
 
 public class Main {
 
@@ -35,6 +36,12 @@ public class Main {
         try {
             RescueIncident incident = new RescueIncident("INC001", bird, location, reporter,
                     1, true, "Stuck in a tall tree");
+            System.out.println(incident);
+
+            // working out the priority
+            PriorityCalculator calculator = new PriorityCalculator();
+            calculator.assessPriority(incident);
+            System.out.println("Score: " + incident.getPriorityScore());
             System.out.println(incident);
 
             // can this team rescue a bird?

@@ -84,6 +84,28 @@ public class IncidentManager {
         team.setStatus(TeamStatus.ASSIGNED);
     }
 
+    // moves the incident to its next stage and frees the team when it is done
+    public void updateStatus(String incidentId, IncidentStatus newStatus)
+            throws IncidentNotFoundException, InvalidInputException {
+        RescueIncident incident = findIncident(incidentId);
+        IncidentStatus current = incident.getStatus();
+
+        if (newStatus == IncidentStatus.IN_PROGRESS) {
+            if (current != IncidentStatus.ASSIGNED) {
+                throw new InvalidInputException("Incident " + incidentId + " must be assigned before it can start");
+            }
+            incident.setStatus(IncidentStatus.IN_PROGRESS);
+        } else if (newStatus == IncidentStatus.COMPLETED) {
+            if (current != IncidentStatus.IN_PROGRESS) {
+                throw new InvalidInputException("Incident " + incidentId + " must be in progress before it can be completed");
+            }
+            incident.setStatus(IncidentStatus.COMPLETED);
+            incident.getAssignedTeam().setStatus(TeamStatus.AVAILABLE);
+        } else {
+            throw new InvalidInputException("Status can only be changed to IN_PROGRESS or COMPLETED");
+        }
+    }
+
     public List<RescueTeam> getAllTeams() {
         return teams;
     }
